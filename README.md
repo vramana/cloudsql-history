@@ -1,12 +1,13 @@
 # Cloud SQL Query History
 
-A Chrome extension to capture and save SQL queries from Google Cloud SQL Studio.
+A Chrome extension to capture and save SQL queries from Google Cloud SQL Studio. Displays query history in a side panel beside your page.
 
 ## Features
 
 - **Automatic capture** - Queries are saved automatically when you click the Run button
-- Manual capture option via the extension popup
-- Store query history locally in Chrome storage
+- **Side panel UI** - View history in a panel beside your page (no popups)
+- **Live updates** - Side panel updates automatically when queries are captured
+- Query history grouped by day (Today, Yesterday, or date)
 - Copy queries to clipboard
 - Delete individual queries or clear all history
 - Keeps the last 100 queries
@@ -27,16 +28,15 @@ A Chrome extension to capture and save SQL queries from Google Cloud SQL Studio.
 
 1. Navigate to [Cloud SQL Studio](https://console.cloud.google.com/sql) in Google Cloud Console
 
-2. Open the SQL editor and write or paste your query
+2. Click the extension icon to open the side panel
 
-3. Click the **Run** button - your query is automatically captured
+3. Write and run queries - they are automatically captured
 
-4. To view history, click the extension icon in the Chrome toolbar
-
-5. Your query history will appear with options to:
-   - **Copy** - Copy the query to clipboard
-   - **Delete** - Remove a specific query from history
-   - **Capture Query** - Manually capture the current query
+4. The side panel shows your query history grouped by day:
+   - **Copy** - Copy a query to clipboard
+   - **Delete** - Remove a specific query
+   - **Capture** - Manually capture the current query
+   - **Clear** - Remove all history
 
 ## Testing
 
@@ -46,26 +46,22 @@ A Chrome extension to capture and save SQL queries from Google Cloud SQL Studio.
 
 2. Go to https://console.cloud.google.com/sql and open any Cloud SQL instance
 
-3. Navigate to **SQL Studio** or **Query editor**
+3. Click the extension icon to open the side panel
 
-4. Type a test query like:
-   ```sql
-   SELECT * FROM users LIMIT 10;
-   ```
+4. Navigate to **SQL Studio** or **Query editor**
 
-5. Click the extension icon and click **Capture Query**
-
-6. Verify the query appears in the history list
+5. Type and run a query - it should appear in the side panel automatically
 
 ### Test Cases
 
 | Test | Steps | Expected Result |
 |------|-------|-----------------|
-| Auto capture | Type query, click Run button | Query automatically saved |
-| Manual capture | Click extension, click Capture | Query saved to history |
+| Open side panel | Click extension icon | Side panel opens beside page |
+| Auto capture | Type query, click Run button | Query appears in side panel |
+| Manual capture | Click Capture in side panel | Query saved to history |
 | Copy query | Click Copy button | Query copied to clipboard |
 | Delete query | Click Delete button | Query removed from list |
-| Clear history | Click Clear History | All queries removed |
+| Clear history | Click Clear button | All queries removed |
 
 ## Files
 
@@ -73,10 +69,10 @@ A Chrome extension to capture and save SQL queries from Google Cloud SQL Studio.
 cloudsql-history/
 ├── manifest.json     # Extension configuration
 ├── content.js        # Auto-capture on Run button click
-├── popup.html        # Extension popup UI
-├── popup.css         # Popup styles
-├── popup.js          # Popup logic
-├── background.js     # Service worker (handles saving)
+├── sidepanel.html    # Side panel UI
+├── sidepanel.css     # Side panel styles
+├── sidepanel.js      # Side panel logic
+├── background.js     # Service worker (handles saving & side panel)
 ├── icons/            # Extension icons
 │   ├── icon16.png
 │   ├── icon48.png
@@ -86,14 +82,17 @@ cloudsql-history/
 
 ## Troubleshooting
 
+### Side panel not opening
+- Make sure you're using Chrome 114 or later (side panel API required)
+- Try reloading the extension at `chrome://extensions/`
+
 ### "No query found in editor"
 - Make sure you're on the Cloud SQL Studio page with the query editor visible
 - The editor must have a `textarea[role="textbox"]` element
 
-### Extension not working after Chrome update
-- Go to `chrome://extensions/`
-- Click the refresh icon on the extension card
-- Or remove and re-load the extension
+### Queries not auto-capturing
+- Check the browser console for errors
+- Reload the Cloud SQL Studio page after installing the extension
 
 ### Queries not persisting
 - Chrome storage is used; clearing browser data may remove history

@@ -5,6 +5,11 @@ chrome.runtime.onInstalled.addListener(() => {
   console.log('Cloud SQL Query History extension installed');
 });
 
+// Open side panel when extension icon is clicked
+chrome.action.onClicked.addListener((tab) => {
+  chrome.sidePanel.open({ windowId: tab.windowId });
+});
+
 // Listen for messages from content script
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === 'SAVE_QUERY') {

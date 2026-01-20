@@ -6,6 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadHistory();
 
+  // Reload history when storage changes (auto-capture from content script)
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === 'local' && changes.history) {
+      loadHistory();
+    }
+  });
+
   captureBtn.addEventListener('click', captureQuery);
   clearBtn.addEventListener('click', clearHistory);
 
@@ -14,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
       if (!tab.url.includes('console.cloud.google.com')) {
-        showStatus('Please navigate to Cloud SQL Studio first', 'error');
+        showStatus('Navigate to Cloud SQL Studio first', 'error');
         return;
       }
 
@@ -53,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     history.unshift(entry);
 
-    // Keep only last 100 queries
     if (history.length > 100) {
       history.pop();
     }
@@ -65,11 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const { history = [] } = await chrome.storage.local.get('history');
 
     if (history.length === 0) {
-      historyList.innerHTML = '<div class="empty-state">No queries captured yet</div>';
+      historyList.innerHTML = '<div class="empty-state">No queries captured yet.<br><br>Run a query in Cloud SQL Studio and it will appear here.</div>';
       return;
     }
 
-    // Group queries by day
     const grouped = groupByDay(history);
 
     let html = '';
@@ -98,12 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     historyList.innerHTML = html;
 
-    // Add event listeners
     historyList.querySelectorAll('.copy-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const query = decodeURIComponent(btn.dataset.query);
         navigator.clipboard.writeText(query);
-        showStatus('Copied to clipboard!', 'success');
+        showStatus('Copied!', 'success');
       });
     });
 
@@ -117,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (const entry of history) {
       const date = new Date(entry.timestamp);
-      const dayKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
+      const dayKey = date.toISOString().split('T')[0];
 
       if (!groups[dayKey]) {
         groups[dayKey] = [];
@@ -143,9 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return 'Yesterday';
     } else {
       return date.toLocaleDateString(undefined, {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
+        weekday: 'short',
+        month: 'short',
         day: 'numeric'
       });
     }
@@ -169,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     statusEl.className = 'status ' + type;
     setTimeout(() => {
       statusEl.className = 'status';
-    }, 3000);
+    }, 2000);
   }
 
   function formatTime(isoString) {
