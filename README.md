@@ -10,7 +10,7 @@ A Chrome extension to capture and save SQL queries from Google Cloud SQL Studio.
 - Query history grouped by day (Today, Yesterday, or date)
 - Copy queries to clipboard
 - Delete individual queries or clear all history
-- Keeps the last 100 queries
+- Stores up to 30,000 queries
 
 ## Installation (Developer Mode)
 

@@ -28,8 +28,8 @@ async function saveQuery(query) {
 
   history.unshift(entry);
 
-  // Keep only last 100 queries
-  if (history.length > 100) {
+  // Keep only last 30k queries
+  if (history.length > 30000) {
     history.pop();
   }
 

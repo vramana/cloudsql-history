@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const clearBtn = document.getElementById('clearBtn');
   const statusEl = document.getElementById('status');
   const historyList = document.getElementById('historyList');
+  const queryCountEl = document.getElementById('queryCount');
 
   loadHistory();
 
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     history.unshift(entry);
 
-    if (history.length > 100) {
+    if (history.length > 30000) {
       history.pop();
     }
 
@@ -70,8 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadHistory() {
     const { history = [] } = await chrome.storage.local.get('history');
 
+    // Update query count
+    queryCountEl.textContent = history.length > 0 ? history.length.toLocaleString() : '';
+
     if (history.length === 0) {
-      historyList.innerHTML = '<div class="empty-state">No queries captured yet.<br><br>Run a query in Cloud SQL Studio and it will appear here.</div>';
+      historyList.innerHTML = '<div class="empty-state">No queries captured yet<br><small>Run a query in Cloud SQL Studio and it will appear here</small></div>';
       return;
     }
 
