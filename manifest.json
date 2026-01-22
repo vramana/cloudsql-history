@@ -12,6 +12,10 @@
   "host_permissions": [
     "https://console.cloud.google.com/*"
   ],
+  "web_accessible_resources": [{
+    "resources": ["injected.js"],
+    "matches": ["https://console.cloud.google.com/*"]
+  }],
   "action": {
     "default_icon": {
       "16": "icons/icon16.png",

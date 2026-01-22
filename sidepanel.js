@@ -46,8 +46,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function extractQuery() {
-    const editorTextarea = document.querySelector('textarea[role="textbox"]');
-    return editorTextarea ? editorTextarea.value : null;
+    // Get Monaco editor lines sorted by visual position
+    const lines = document.querySelectorAll('.monaco-editor .view-line');
+    if (lines.length === 0) return null;
+
+    const lineData = [];
+    for (const line of lines) {
+      const top = parseFloat(line.style.top) || line.getBoundingClientRect().top;
+      lineData.push({ top, text: line.textContent });
+    }
+
+    lineData.sort((a, b) => a.top - b.top);
+    return lineData.map(l => l.text).join('\n');
   }
 
   async function saveQuery(query) {
